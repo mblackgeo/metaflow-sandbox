@@ -1,4 +1,8 @@
-from metaflow import FlowSpec, Parameter, conda, conda_base, step
+from io import BytesIO
+
+from metaflow import FlowSpec, IncludeFile, Parameter, conda, conda_base, step
+
+from flow_utils import pip
 
 
 def script_path(filename):
@@ -8,26 +12,17 @@ def script_path(filename):
     return os.path.join(filepath, filename)
 
 
-@conda_base(python="3.7")
+@conda_base(python="3.8.12")
 class RasterFootprintFlow(FlowSpec):
     """
     Generate a vector file containing the footprint of a raster.
     """
 
-    input_file = Parameter(
-        "input_file", help="Input raster image to generate a footprint for.", default=script_path("landsat.tif")
-    )
-
-    output_file = Parameter(
-        "output_file",
-        help="Output vector containing the footprint of the input.",
-        default=script_path("footprint.geojson"),
-    )
-
-    output_format = Parameter(
-        "output_format",
-        help="Format of the output footprint.",
-        default="GeoJSON",
+    input_file = IncludeFile(
+        "input_file",
+        help="Input raster image to generate a footprint for.",
+        default=script_path("data/landsat.tif"),
+        is_text=False,
     )
 
     @step
@@ -35,12 +30,11 @@ class RasterFootprintFlow(FlowSpec):
         """
         Start step.
         """
-        print(
-            f"Creating footprint file : {self.output_file} ({self.output_format}), from input image : {self.input_file}"
-        )
+        print("Creating footprint")
         self.next(self.process)
 
-    @conda(libraries={"rasterio": "1.2.10", "geopandas": "0.10.2"})
+    @conda(libraries={"gdal": "3.0.2"})
+    @pip(libraries={"rasterio": "1.2.10", "geopandas": "0.10.2", "typer[all]": "0.4.0"})
     @step
     def process(self):
         """
@@ -48,7 +42,9 @@ class RasterFootprintFlow(FlowSpec):
         """
         from footprint import create_footprint
 
-        create_footprint(input_file=self.input_file, output_file=self.output_format, output_format=self.output_format)
+        gdf = create_footprint(input_file=BytesIO(self.input_file), output_format="GeoJSON")
+        self.footprint = gdf.to_crs(4326).to_json(drop_id=True)
+
         self.next(self.end)
 
     @step
@@ -56,9 +52,7 @@ class RasterFootprintFlow(FlowSpec):
         """
         End step.
         """
-        print(
-            f"Created footprint file : {self.output_file} ({self.output_format}), from input image : {self.input_file}"
-        )
+        print("Created footprint")
 
 
 if __name__ == "__main__":
