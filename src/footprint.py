@@ -1,4 +1,6 @@
+from io import BytesIO
 from pathlib import Path
+from typing import Union
 
 import geopandas as gpd
 import numpy as np
@@ -8,7 +10,7 @@ from rasterio import features
 from shapely.geometry import Polygon, shape
 
 
-def create_footprint(input_file: Path, output_file: Path, output_format: str = "GeoJSON"):
+def create_footprint(input_file: Union[str, Path, BytesIO]) -> gpd.GeoDataFrame:
     """Create a footprint from an input raster file"""
 
     with rasterio.open(input_file) as src:
@@ -33,7 +35,23 @@ def create_footprint(input_file: Path, output_file: Path, output_format: str = "
 
     # Create a GeoDataFrame of the result so we can write out the GeoJSON without
     # having to use Fiona directly and to do coordinate transforms easily (if needed)
-    gdf = gpd.GeoDataFrame({"geometry": [geom]}, crs=crs)
+    return gpd.GeoDataFrame({"geometry": [geom]}, crs=crs)
+
+
+def main(input_file: Path, output_file: Path, output_format: str = "GeoJSON"):
+    """Create a footprint vector from a raster
+
+    Parameters
+    ----------
+    input_file : Path
+        Path to input raster
+    output_file : Path
+        Path to output vector which will contain the footprint of ``input_file``
+    output_format : str, optional
+        Output format, by default "GeoJSON"
+    """
+    # Get the GeoDataFrame that contains the footprint
+    gdf = create_footprint(input_file=input_file)
 
     # If the output is GeoJSON it should be in WGS84
     if output_format == "GeoJSON":
@@ -44,4 +62,4 @@ def create_footprint(input_file: Path, output_file: Path, output_format: str = "
 
 
 if __name__ == "__main__":
-    typer.run(create_footprint)
+    typer.run(main)
