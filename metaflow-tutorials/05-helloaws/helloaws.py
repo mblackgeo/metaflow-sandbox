@@ -1,4 +1,4 @@
-from metaflow import FlowSpec, step, batch, retry
+from metaflow import FlowSpec, batch, retry, step
 
 
 class HelloAWSFlow(FlowSpec):
@@ -29,7 +29,7 @@ class HelloAWSFlow(FlowSpec):
 
         self.next(self.hello)
 
-    @batch(cpu=1, memory=500)
+    @batch(cpu=1, memory=2048)
     @retry
     @step
     def hello(self):
