@@ -10,8 +10,9 @@ from shapely.geometry import Polygon, shape
 
 def main(input_file: Path, output_file: Path, output_format: str = "GeoJSON"):
     """Create a footprint from an input raster file"""
+
     with rasterio.open(input_file) as src:
-        # Read the first band of the image and the no data mask to a numpy array
+        # Read the first band of the image and the no data mask to numpy arrays
         src_band = src.read(1)
         nodata_msk = src.read_masks(1)
         crs = src.crs
@@ -31,7 +32,7 @@ def main(input_file: Path, output_file: Path, output_format: str = "GeoJSON"):
     geom = Polygon(shape(geojson).exterior.coords)
 
     # Create a GeoDataFrame of the result so we can write out the GeoJSON without
-    # having to use Fiona directly and to coordinate transforms easily (if needed)
+    # having to use Fiona directly and to do coordinate transforms easily (if needed)
     gdf = gpd.GeoDataFrame({"geometry": [geom]}, crs=crs)
 
     # If the output is GeoJSON it should be in WGS84
