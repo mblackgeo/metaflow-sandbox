@@ -8,7 +8,7 @@ from rasterio import features
 from shapely.geometry import Polygon, shape
 
 
-def main(input_file: Path, output_file: Path, output_format: str = "GeoJSON"):
+def create_footprint(input_file: Path, output_file: Path, output_format: str = "GeoJSON"):
     """Create a footprint from an input raster file"""
 
     with rasterio.open(input_file) as src:
@@ -44,4 +44,4 @@ def main(input_file: Path, output_file: Path, output_format: str = "GeoJSON"):
 
 
 if __name__ == "__main__":
-    typer.run(main)
+    typer.run(create_footprint)
