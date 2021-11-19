@@ -42,7 +42,7 @@ class RasterFootprintFlow(FlowSpec):
         """
         from footprint import create_footprint
 
-        gdf = create_footprint(input_file=BytesIO(self.input_file), output_format="GeoJSON")
+        gdf = create_footprint(input_file=BytesIO(self.input_file))
         self.footprint = gdf.to_crs(4326).to_json(drop_id=True)
 
         self.next(self.end)
