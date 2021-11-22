@@ -2,7 +2,7 @@ from io import BytesIO
 
 from metaflow import FlowSpec, IncludeFile, Parameter, conda, conda_base, step
 
-from flow_utils import pip
+from utils import pip
 
 
 def script_path(filename):
