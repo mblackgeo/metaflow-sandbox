@@ -1,7 +1,4 @@
-from io import BytesIO
-
-from metaflow import FlowSpec, IncludeFile, Parameter, conda, conda_base, step
-
+from metaflow import FlowSpec, Parameter, conda, conda_base, step
 from utils import pip
 
 
@@ -9,7 +6,7 @@ def script_path(filename):
     import os
 
     filepath = os.path.join(os.path.dirname(__file__))
-    return os.path.join(filepath, filename)
+    return os.path.abspath(os.path.join(filepath, filename))
 
 
 @conda_base(python="3.8.12")
@@ -18,11 +15,10 @@ class RasterFootprintFlow(FlowSpec):
     Generate a vector file containing the footprint of a raster.
     """
 
-    input_file = IncludeFile(
-        "input_file",
-        help="Input raster image to generate a footprint for.",
+    input_file = Parameter(
+        "input-file",
+        help="Path to raster image to generate a footprint for.",
         default=script_path("data/landsat.tif"),
-        is_text=False,
     )
 
     @step
@@ -42,7 +38,7 @@ class RasterFootprintFlow(FlowSpec):
         """
         from footprint import create_footprint
 
-        gdf = create_footprint(input_file=BytesIO(self.input_file))
+        gdf = create_footprint(input_file=self.input_file)
         self.footprint = gdf.to_crs(4326).to_json(drop_id=True)
 
         self.next(self.end)
