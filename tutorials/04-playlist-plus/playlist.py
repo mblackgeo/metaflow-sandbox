@@ -91,7 +91,6 @@ class PlayListFlow(FlowSpec):
 
         """
         import editdistance
-        import pandas
 
         # Define a helper function to compute the similarity between two
         # strings.
@@ -120,8 +119,6 @@ class PlayListFlow(FlowSpec):
 
         """
         from random import shuffle
-
-        import pandas
 
         # For the genre of interest, generate a potential playlist using only
         # highest gross box office titles (i.e. those in the last quartile).
