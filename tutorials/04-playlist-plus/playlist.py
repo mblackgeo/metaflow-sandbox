@@ -1,4 +1,4 @@
-from metaflow import FlowSpec, step, Parameter, conda, conda_base
+from metaflow import FlowSpec, Parameter, conda, conda_base, step
 
 
 def get_python_version():
@@ -32,9 +32,7 @@ class PlayListFlow(FlowSpec):
 
     """
 
-    genre = Parameter(
-        "genre", help="Filter movies for a particular genre.", default="Sci-Fi"
-    )
+    genre = Parameter("genre", help="Filter movies for a particular genre.", default="Sci-Fi")
 
     hint = Parameter(
         "hint",
@@ -92,8 +90,8 @@ class PlayListFlow(FlowSpec):
         environment.
 
         """
-        import pandas
         import editdistance
+        import pandas
 
         # Define a helper function to compute the similarity between two
         # strings.
@@ -121,8 +119,9 @@ class PlayListFlow(FlowSpec):
         system.
 
         """
-        import pandas
         from random import shuffle
+
+        import pandas
 
         # For the genre of interest, generate a potential playlist using only
         # highest gross box office titles (i.e. those in the last quartile).

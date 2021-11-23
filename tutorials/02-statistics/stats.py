@@ -1,4 +1,4 @@
-from metaflow import FlowSpec, step, IncludeFile
+from metaflow import FlowSpec, IncludeFile, step
 
 
 def script_path(filename):
@@ -41,17 +41,16 @@ class MovieStatsFlow(FlowSpec):
         3) Launches parallel statistics computation for each genre.
 
         """
-        import pandas
         from io import StringIO
+
+        import pandas
 
         # Load the data set into a pandas dataframe.
         self.dataframe = pandas.read_csv(StringIO(self.movie_data))
 
         # The column 'genres' has a list of genres for each movie. Let's get
         # all the unique genres.
-        self.genres = {
-            genre for genres in self.dataframe["genres"] for genre in genres.split("|")
-        }
+        self.genres = {genre for genres in self.dataframe["genres"] for genre in genres.split("|")}
         self.genres = list(self.genres)
 
         # We want to compute some statistics for each genre. The 'foreach'
@@ -91,8 +90,7 @@ class MovieStatsFlow(FlowSpec):
         """
         # Merge results from the genre specific computations.
         self.genre_stats = {
-            inp.genre.lower(): {"quartiles": inp.quartiles, "dataframe": inp.dataframe}
-            for inp in inputs
+            inp.genre.lower(): {"quartiles": inp.quartiles, "dataframe": inp.dataframe} for inp in inputs
         }
 
         self.next(self.end)
