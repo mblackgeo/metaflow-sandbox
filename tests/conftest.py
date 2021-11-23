@@ -13,7 +13,7 @@ def test_dir():
 
 @pytest.fixture
 def flow_dir() -> str:
-    return os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "src"))
+    return os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "footprint"))
 
 
 class CliRunner:
