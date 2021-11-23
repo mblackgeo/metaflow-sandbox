@@ -17,9 +17,12 @@ def test_footprint(test_dir: str):
 
 def test_main(test_dir: str, tmp_path: Path):
     image_path = Path(test_dir) / "landsat.tif"
-    output = tmp_path / "out.geojson"
+    output_path = tmp_path / "out.geojson"
 
-    fp1 = create_footprint(image_path)
-    fp2 = gpd.read_file(main(image_path, output_file=output, output_format="GeoJSON"))
+    # Run the main function to generate the output file
+    main(image_path, output_file=str(output_path), output_format="GeoJSON")
 
-    assert_geodataframe_equal(fp1, fp2)
+    # check the result of the main and the create_footprint function are identical
+    fp1 = create_footprint(image_path).to_crs(epsg=4326)
+    fp2 = gpd.read_file(str(output_path))
+    assert_geodataframe_equal(fp1, fp2, check_less_precise=True)
