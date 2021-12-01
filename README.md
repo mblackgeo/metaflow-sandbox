@@ -1,4 +1,4 @@
-# Netaflow Sandbox
+# Metaflow Sandbox
 A sandbox repository for playing around with Metaflow and creating flows that use GDAL. Also include is an approach to unit testing with Metaflow.
 
 ## Installation
